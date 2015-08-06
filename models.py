@@ -52,7 +52,6 @@ class BidForm(forms.Form):
 def auction_create(sender, instance, created, **kwargs):
     if created == True:
         create_uuid(instance)
-
 post_save.connect(auction_create, sender = Auction)
 
 #creates uuid for bids upon sucessful creation and emails bidder(todo)
@@ -69,6 +68,6 @@ post_save.connect(bid_create, sender = Bid)
 
 #helper to create uuid if field empty
 def create_uuid(item):
-    if item.uuid == None:
+    if item.uuid == None or item.uuid == '':
         item.uuid = uuid.uuid4()
     item.save()
