@@ -1,0 +1,48 @@
+{% extends 'mybase.html' %}
+{% block head %}
+
+{% load staticfiles %}
+<link rel='stylesheet' type='text/css' href="{% static 'silent_auction/style.css' %}"/>
+<script type>
+$(document).ready(function(){
+
+    var top_bid;
+    $.get('/silent_auction/api/auction/' + '{{auction_id}}', function(data){
+            top_bid = data;
+            alert(top_bid);
+    });
+//TODO
+    $('#bid_form').submit(function(){
+        $.get('/silent_auction/api/auction/' + '{{auction_id}}', function(data){
+            top_bid = data;
+            if ($('#id_amount').val() > top_bid){
+                return true
+            }
+            else{
+                alert('Bid too low! Current top bid at ' + top_bid)
+                return false
+            }
+        });
+        
+   });
+});
+</script>
+
+{% endblock %}
+{% block pagetitle %}
+You are bidding on {{auction.item_name}}
+{% endblock %}
+
+
+{% block body %}
+<div class = 'box'>
+    <form action = '{% url 'silent_auction:bid_form' %}?auction_id={{auction_id}}' method = 'POST' id = 'bid_form'>
+    {% csrf_token %}
+    {% for x in form %}
+        {{x.label}}{{x}}<br>
+    {% endfor %}
+    <input type = 'submit' value = 'Place Bid'>
+</form>
+</div>
+<div class = 'clear' />
+{% endblock %}

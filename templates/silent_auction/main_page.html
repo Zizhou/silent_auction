@@ -1,0 +1,30 @@
+{% extends 'mybase.html' %}
+{% block head %}
+{% load staticfiles %}
+<link rel='stylesheet' type='text/css' href="{% static 'silent_auction/style.css' %}"/>
+{% endblock %}
+{% block pagetitle %}
+
+{% endblock %}
+
+
+{% block body %}
+{% for x in auctions %}
+<div class = 'box'>
+Item: {{x.item_name}}<br>
+Current Bid: {{x.top_bid}}<br>
+<a href = "{% url 'silent_auction:auction' x.uuid %}">link</a>
+
+</div><div style = clear:both></div>
+{% endfor %}
+<hr>
+{% for x in complete_auctions %}
+<div class = 'box'>
+Item: {{x.item_name}}<br>
+Winning Bid: {{x.top_bid}}<br>
+<a href = "{% url 'silent_auction:auction' x.uuid %}">link</a>
+
+</div><div style = clear:both></div>
+{% endfor %}
+
+{% endblock %}
