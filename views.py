@@ -24,24 +24,37 @@ def auction(request, auction_id):
     return render(request, 'silent_auction/auction.html', context)
 ##bid placement form
 # bid on x auction, requires bid, valid email
-# displays current top bid(auto update?)
+# displays current top bid(auto updates)
 def bid_form(request):
     if request.method == 'POST':
         bid_form = BidForm(request.POST)
         if bid_form.is_valid():
             bid_id = bid_form.save_bid(request.GET.get('auction_id'))
-            
+
+#TODO:something            
 
             return redirect('/silent_auction/bid/' + unicode(bid_id))
         else:
             return HttpResponse('nope') 
-    else:        
+    else: 
         auction_id = request.GET.get('auction_id')
         if auction_id == None:
             return redirect('/silent_auction/')
         auction = get_object_or_404(Auction.objects.filter(uuid = auction_id))
+        #auto fill if logged in, saving precious seconds!
+        if request.user.is_authenticated():
+            form = BidForm(initial = {
+                'amount': auction.top_bid + 1,
+                'name' : request.user.username,
+                'email' : request.user.email,
+            })
+
+        else:
+            form = BidForm(initial = {
+                'amount': auction.top_bid + 1,
+            })
         context = {
-            'form' : BidForm,
+            'form' : form,
             'auction' : auction,
             'auction_id' : auction_id,
         }
@@ -56,6 +69,7 @@ def bid_page(request, bid_id):
     }
     return render(request, 'silent_auction/bid_page.html', context)
 
+# endpoint for janky ajax requests for live price updates
 def api_price_check(request, auction_id):
     auction = Auction.objects.get(uuid = auction_id)
     #if datetime.datetime.now(tz = auction.end_time.tzinfo) > auction.end_time or datetime.datetime.now(tz = auction.start_time.tzinfo) < auction.start_time:

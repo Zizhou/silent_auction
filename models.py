@@ -34,11 +34,12 @@ class Auction(models.Model):
 
 ##Forms
 
+#I totally forgot about modelforms. oops.
 class BidForm(forms.Form):
-    amount = forms.IntegerField(min_value = 0, label = 'Your Bid:')
-    email = forms.EmailField(label = 'Valid E-Mail Address')
-    name = forms.CharField(max_length = 200, label = 'Your Name')
-    
+    amount = forms.IntegerField(min_value = 0, label = 'Your Bid:', widget = forms.NumberInput(attrs={'required': True}))
+    email = forms.EmailField(label = 'Valid E-Mail Address', widget = forms.EmailInput(attrs={'required': True}))
+    name = forms.CharField(max_length = 200, label = 'Your Name', widget = forms.TextInput(attrs={'required': True}))
+
     def save_bid(self, auction_id):
         bid = Bid(amount = self.cleaned_data['amount'], email = self.cleaned_data['email'], name = self.cleaned_data['name'], auction = Auction.objects.get(uuid = auction_id))
         bid.save()

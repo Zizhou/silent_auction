@@ -4,33 +4,48 @@
 {% load staticfiles %}
 <link rel='stylesheet' type='text/css' href="{% static 'silent_auction/style.css' %}"/>
 <script type>
-$(document).ready(function(){
 
-    var top_bid;
+function setPrice(){
     $.get('/silent_auction/api/auction/' + '{{auction_id}}', function(data){
-            top_bid = data;
-            alert(top_bid);
+        $('#price').html(data);
     });
-//TODO
+    console.log(parseInt($('#price').text()));
+
+}
+
+//timer thing?
+var timer;
+function repeatMe(){
+    timer = setInterval(setPrice, 5000);
+}
+
+function checkBid(){
+    var valid = false;
+    setPrice();//this is jank
+    
+    if ($('#id_amount').val() > parseInt($('#price').text())){
+        valid = true
+    }
+    else{
+        alert('Bid too low! Current top bid at ' + parseInt($('#price').text()))
+        valid = false
+    }
+
+    return valid
+}
+$(document).ready(function(){
+    setPrice();
+    repeatMe();
     $('#bid_form').submit(function(){
-        $.get('/silent_auction/api/auction/' + '{{auction_id}}', function(data){
-            top_bid = data;
-            if ($('#id_amount').val() > top_bid){
-                return true
-            }
-            else{
-                alert('Bid too low! Current top bid at ' + top_bid)
-                return false
-            }
-        });
-        
-   });
+        return checkBid()
+    });
 });
+
 </script>
 
 {% endblock %}
 {% block pagetitle %}
-You are bidding on {{auction.item_name}}
+You are bidding on {{auction.item_name}}:<div id = 'price'></div>
 {% endblock %}
 
 
