@@ -10,5 +10,18 @@
 
 
 {% block body %}
-bid page {{bid_id}}
+<div class = 'box'>
+your bid for {{bid.auction.item_name}}<br>
+bid page: {{bid.uuid}}<br>
+your name: {{bid.name}}<br>
+bid: {{bid.amount}}<br>
+email sent to: {{bid.email}}<br>
+bid made: {{bid.bid_time}}
+</div>
+
+<div class = 'clear'/>
+<div class = 'button'>
+    <a class = 'fill' href='{% url 'silent_auction:auction' bid.auction.uuid %}'>Auction</a>
+</div>
+<div class = 'clear'/>
 {% endblock %}

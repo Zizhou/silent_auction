@@ -28,14 +28,17 @@ def auction(request, auction_id):
 def bid_form(request):
     if request.method == 'POST':
         bid_form = BidForm(request.POST)
+        #structural validation
         if bid_form.is_valid():
+            #logical validation
+            if not bid_form.is_kosher(request.GET.get('auction_id')):
+                return HttpResponse('your bid is no longer valid, try again')
+
             bid_id = bid_form.save_bid(request.GET.get('auction_id'))
-
-#TODO:something            
-
+#TODO: mailbot goes here
             return redirect('/silent_auction/bid/' + unicode(bid_id))
         else:
-            return HttpResponse('nope') 
+            return HttpResponse('your bid is structurally <i>wrong</i>, somehow') 
     else: 
         auction_id = request.GET.get('auction_id')
         if auction_id == None:

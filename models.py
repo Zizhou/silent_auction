@@ -36,7 +36,7 @@ class Auction(models.Model):
 
 #I totally forgot about modelforms. oops.
 class BidForm(forms.Form):
-    amount = forms.IntegerField(min_value = 0, label = 'Your Bid:', widget = forms.NumberInput(attrs={'required': True}))
+    amount = forms.IntegerField(min_value = 0, label = 'Your Bid', widget = forms.NumberInput(attrs={'required': True}))
     email = forms.EmailField(label = 'Valid E-Mail Address', widget = forms.EmailInput(attrs={'required': True}))
     name = forms.CharField(max_length = 200, label = 'Your Name', widget = forms.TextInput(attrs={'required': True}))
 
@@ -46,6 +46,15 @@ class BidForm(forms.Form):
         print bid.uuid
         uuid = bid.uuid
         return uuid
+    #true if bid is above top and auction is active 
+    #(also if it was prepared under supervision of a rabbi)
+    def is_kosher(self, auction_id):
+        this_auction = Auction.objects.get(uuid = auction_id)
+        if this_auction.top_bid >= self.cleaned_data['amount']:
+            return False
+        if this_auction.active == False:
+            return False
+        return True
 ##magic signals
 #magically delicious
 

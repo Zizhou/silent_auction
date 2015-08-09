@@ -4,3 +4,5 @@ allows for anonymous users to participate, registration not required.
 registered users will auto-fill.
 
 probably super insecure.
+
+use cron or equivalent to run check_active command(TODO)

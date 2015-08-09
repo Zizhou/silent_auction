@@ -3,41 +3,14 @@
 
 {% load staticfiles %}
 <link rel='stylesheet' type='text/css' href="{% static 'silent_auction/style.css' %}"/>
-<script type>
-
-function setPrice(){
-    $.get('/silent_auction/api/auction/' + '{{auction_id}}', function(data){
-        $('#price').html(data);
-    });
-    console.log(parseInt($('#price').text()));
-
-}
-
-//timer thing?
-var timer;
-function repeatMe(){
-    timer = setInterval(setPrice, 5000);
-}
-
-function checkBid(){
-    var valid = false;
-    setPrice();//this is jank
-    
-    if ($('#id_amount').val() > parseInt($('#price').text())){
-        valid = true
-    }
-    else{
-        alert('Bid too low! Current top bid at ' + parseInt($('#price').text()))
-        valid = false
-    }
-
-    return valid
-}
+<script type='text/javascript' src='{% static 'silent_auction/price.js' %}'>
+</script>
+<script>
 $(document).ready(function(){
-    setPrice();
-    repeatMe();
+    setPrice('{{auction.uuid}}');
+    repeatMe('{{auction.uuid}}');
     $('#bid_form').submit(function(){
-        return checkBid()
+        return checkBid('{{auction.uuid}}')
     });
 });
 
@@ -45,19 +18,23 @@ $(document).ready(function(){
 
 {% endblock %}
 {% block pagetitle %}
-You are bidding on {{auction.item_name}}:<div id = 'price'></div>
+You are bidding on {{auction.item_name}}: $<span id = 'price'>{{auction.top_bid}}</span>
 {% endblock %}
 
 
 {% block body %}
+{% if auction.active %}
 <div class = 'box'>
     <form action = '{% url 'silent_auction:bid_form' %}?auction_id={{auction_id}}' method = 'POST' id = 'bid_form'>
-    {% csrf_token %}
-    {% for x in form %}
-        {{x.label}}{{x}}<br>
-    {% endfor %}
-    <input type = 'submit' value = 'Place Bid'>
-</form>
+        {% csrf_token %}
+        {% for x in form %}
+            {{x.label}}:{{x}}<br>
+        {% endfor %}
+        <input type = 'submit' value = 'Place Bid'>
+    </form>
 </div>
+{% else %}
+IT'S OVER
+{% endif %}
 <div class = 'clear' />
 {% endblock %}

@@ -1,8 +1,16 @@
 {% extends 'mybase.html' %}
 {% block head %}
+
 {% load staticfiles %}
 <link rel='stylesheet' type='text/css' href="{% static 'silent_auction/style.css' %}"/>
-
+<script type='text/javascript' src='{% static 'silent_auction/price.js' %}'>
+</script>
+<script>
+$(document).ready(function(){
+    setPrice('{{auction.uuid}}');
+    repeatMe('{{auction.uuid}}');
+});
+</script>
 
 {% endblock %}
 {% block pagetitle %}
@@ -11,11 +19,11 @@ Auction Page
 
 
 {% block body %}
+{% if auction.active %}
 <div class = 'box'>
-<div class = 'price'>{{auction.top_bid}}</div>
-{{auction.uuid}}<br>
-<strong>{{auction.item_name}}</strong><br>
-{{auction.item_description}}<br>
+Item: <strong>{{auction.item_name}}</strong><br>
+Top bid: <span id = 'price'>{{auction.top_bid}}</span><br>
+Description: {{auction.item_description}}<br>
     <div class = 'button'>
         <a class = 'fill' href='{% url 'silent_auction:bid_form' %}?auction_id={{auction.uuid}}' 'bid'>Bid now!
         </a>
@@ -23,9 +31,13 @@ Auction Page
 </div>
 <div class = 'clear'></div>
 <div class = 'button'>
-<a class = 'fill' href = '{% url 'silent_auction:main' %}'>Listings</a>
+    <a class = 'fill' href = '{% url 'silent_auction:main' %}'>Listings</a>
 </div>
+{% else %}
+<div class = 'box'>AUCTION DONE<br>
+Item: <strong>{{auction.item_name}}</strong><br>
+Winning bid: <span id = 'price'>{{auction.top_bid}}</span>
 </div>
-
+{% endif %}
 <div class = 'clear'></div>
 {% endblock %}
