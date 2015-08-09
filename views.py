@@ -18,8 +18,12 @@ def main_page(request):
 # item name, description, current price(auto update?),link to bid
 def auction(request, auction_id):
     auction = get_object_or_404(Auction.objects.filter(uuid = auction_id))
+    all_bids = False 
+    if request.user.is_staff:
+        all_bids = auction.bid_set.all().order_by('-amount')
     context = {
         'auction' : auction,
+        'bids' : all_bids,
     }
     return render(request, 'silent_auction/auction.html', context)
 ##bid placement form

@@ -39,5 +39,13 @@ Item: <strong>{{auction.item_name}}</strong><br>
 Winning bid: <span id = 'price'>{{auction.top_bid}}</span>
 </div>
 {% endif %}
+{% if bids %}
+<div class = 'clear' />
+    {% for x in bids %}
+    <div class = 'box'>
+        {{x}}
+    </div><div class = 'clear'/>
+    {% endfor %}
+{% endif %}
 <div class = 'clear'></div>
 {% endblock %}
