@@ -32,9 +32,6 @@ Description: {{auction.item_description}}<br>
     </div>
 </div>
 <div class = 'clear'></div>
-<div class = 'button'>
-    <a class = 'fill' href = '{% url 'silent_auction:main' %}'>Listings</a>
-</div>
 {% else %}
 <div class = 'box'>AUCTION DONE<br>
 Item: <strong>{{auction.item_name}}</strong><br>
@@ -50,5 +47,9 @@ Winning bid: {{auction.top_bid}}, by {{winner}}
     </div><div class = 'clear'/>
     {% endfor %}
 {% endif %}
+<div class = 'button'>
+    <a class = 'fill' href = '{% url 'silent_auction:main' %}'>Listings</a>
+</div>
+
 <div class = 'clear'></div>
 {% endblock %}
