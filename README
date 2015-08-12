@@ -11,3 +11,5 @@ use cron or equivalent to run check_active command (ideally every minute?) to ma
 
 
 DEPENDENCIES: pytz
+
+add ROBOT_MAILER and ROBOT_PASSWORD to settings.py because I am lazy
