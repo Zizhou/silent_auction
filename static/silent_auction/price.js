@@ -1,7 +1,12 @@
-
+//I suppose I should learn websockets
 function setPrice(auction_id){
     $.get('/silent_auction/api/auction/' + auction_id, function(data){
-        $('#price').html(data);
+        if (data == 'False'){
+            $('#price').html('Auction Invalid');
+        }
+        else{
+            $('#price').html(data);
+        }
     });
     console.log(parseInt($('#price').text()));
 
@@ -22,7 +27,12 @@ function checkBid(auction_id){
         valid = true
     }
     else{
-        alert('Bid too low! Current top bid at ' + parseInt($('#price').text()))
+        if ($('#price').text() == 'Auction Invalid'){
+            alert('Auction is over! Too bad!')
+        }
+        else{
+            alert('Bid too low! Current top bid at ' + parseInt($('#price').text()))
+        }
         valid = false
     }
 

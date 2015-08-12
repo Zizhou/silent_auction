@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 
+from django.utils import timezone
 import datetime, uuid
 
 # Create your models here.
@@ -14,7 +15,7 @@ class Bid(models.Model):
     amount = models.IntegerField(default = 0)
     email = models.EmailField()
     name = models.CharField(max_length = 200, unique = False, blank = True, null = True)
-    bid_time = models.DateTimeField(default = datetime.datetime.now, editable = False) 
+    bid_time = models.DateTimeField(default = timezone.now, editable = False) 
     
     def __unicode__(self):
         return unicode(self.bid_time) + unicode(self.auction.item_name) + ' ' + unicode(self.name) + ' ' + unicode(self.amount)
@@ -24,8 +25,8 @@ class Auction(models.Model):
     item_description = models.TextField(blank = True)
     top_bid = models.IntegerField(default = 0)
     uuid = models.CharField(max_length = 200, unique = True, blank = True, null = True)
-    start_time = models.DateTimeField(default=datetime.datetime.now, editable=False)
-    end_time = models.DateTimeField(default = datetime.datetime(2015,12,12,0,0,0,0,None))
+    start_time = models.DateTimeField(default=timezone.now, editable=False)
+    end_time = models.DateTimeField(default = timezone.now)
     active = models.BooleanField(default = True)
     #TODO image = models.ImageField(blah blah blah)
     

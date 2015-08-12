@@ -1,8 +1,10 @@
 from django.shortcuts import render, HttpResponse, get_object_or_404, redirect
-
+from django.utils import timezone
 from silent_auction.models import Bid, Auction, BidForm
 
 import datetime
+
+
 # Create your views here.
 
 ##main landing page
@@ -79,6 +81,7 @@ def bid_page(request, bid_id):
 # endpoint for janky ajax requests for live price updates
 def api_price_check(request, auction_id):
     auction = Auction.objects.get(uuid = auction_id)
-    #if datetime.datetime.now(tz = auction.end_time.tzinfo) > auction.end_time or datetime.datetime.now(tz = auction.start_time.tzinfo) < auction.start_time:
-     #   return False
+    #THIS IS LARGELY DEPENDENT ON PROPER TIME ZONES
+    if timezone.now() > auction.end_time or timezone.now() < auction.start_time:
+        return HttpResponse(False)
     return HttpResponse(auction.top_bid)

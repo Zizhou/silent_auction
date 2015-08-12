@@ -1,8 +1,13 @@
 silent auction prototype
 
-allows for anonymous users to participate, registration not required. 
-registered users will auto-fill.
+allows for anonymous users to participate, registration not required
+registered users will auto-fill info
 
-probably super insecure.
+probably super insecure
+there's probably some inevitable issues with time zones when using admin page
 
-use cron or equivalent to run check_active command(TODO)
+
+use cron or equivalent to run check_active command (ideally every minute?) to mark auctions inactive if past end time
+
+
+DEPENDENCIES: pytz
