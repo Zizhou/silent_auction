@@ -24,11 +24,14 @@ def main_page(request):
 def auction(request, auction_id):
     auction = get_object_or_404(Auction.objects.filter(uuid = auction_id))
     all_bids = auction.bid_set.all().order_by('-amount')
-    winner = all_bids[0]
+    if len(all_bids) > 0:
+        winner = all_bids[0].name
+    else:
+        winner = 'NONE'
     context = {
         'auction' : auction,
         'bids' : all_bids,
-        'winner': winner.name,
+        'winner': winner,
     }
     return render(request, 'silent_auction/auction.html', context)
 ##bid placement form

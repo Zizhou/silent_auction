@@ -22,7 +22,7 @@ Current Bid: {{x.top_bid}}<br>
 <div class = 'box'>
 Item: {{x.item_name}}<br>
 Winning Bid: {{x.top_bid}}<br>
-
+<a href = "{% url 'silent_auction:auction' x.uuid %}">link</a>
 </div><div style = clear:both></div>
 {% endfor %}
 

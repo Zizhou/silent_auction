@@ -24,6 +24,7 @@ Auction Page
 <div class = 'box'>
 Item: <strong>{{auction.item_name}}</strong><br>
 Top bid: <span id = 'price'>{{auction.top_bid}}</span><br>
+Ends: {{auction.end_time}}<br>
 Description: {{auction.item_description}}<br>
     <div class = 'button'>
         <a class = 'fill' href='{% url 'silent_auction:bid_form' %}?auction_id={{auction.uuid}}' 'bid'>Bid now!
@@ -37,6 +38,7 @@ Description: {{auction.item_description}}<br>
 {% else %}
 <div class = 'box'>AUCTION DONE<br>
 Item: <strong>{{auction.item_name}}</strong><br>
+Ended: {{auction.end_time}}<br>
 Winning bid: {{auction.top_bid}}, by {{winner}}
 </div>
 {% endif %}
