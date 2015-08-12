@@ -2,8 +2,11 @@ from django.shortcuts import render, HttpResponse, get_object_or_404, redirect
 from django.utils import timezone
 from silent_auction.models import Bid, Auction, BidForm
 
-import datetime
+import datetime, mailbot
 
+#very hardcoded
+#much terrible
+LAZY_TLD = 'devletter.net'
 
 # Create your views here.
 
@@ -20,12 +23,12 @@ def main_page(request):
 # item name, description, current price(auto update?),link to bid
 def auction(request, auction_id):
     auction = get_object_or_404(Auction.objects.filter(uuid = auction_id))
-    all_bids = False 
-    if request.user.is_staff:
-        all_bids = auction.bid_set.all().order_by('-amount')
+    all_bids = auction.bid_set.all().order_by('-amount')
+    winner = all_bids[0]
     context = {
         'auction' : auction,
         'bids' : all_bids,
+        'winner': winner.name,
     }
     return render(request, 'silent_auction/auction.html', context)
 ##bid placement form
@@ -34,6 +37,7 @@ def auction(request, auction_id):
 def bid_form(request):
     if request.method == 'POST':
         bid_form = BidForm(request.POST)
+        auction = Auction.objects.get(uuid = request.GET.get('auction_id'))
         #structural validation
         if bid_form.is_valid():
             #logical validation
@@ -41,7 +45,18 @@ def bid_form(request):
                 return HttpResponse('your bid is no longer valid, try again')
 
             bid_id = bid_form.save_bid(request.GET.get('auction_id'))
-#TODO: mailbot goes here
+            
+            
+            #mail time! I should stop using this
+            #one of these days, google is going to completely deprecate this
+
+            #laaaaazy
+            message = "Hey " + unicode(bid_form.cleaned_data['name']) + ",<p>You've submitted a bid for " + unicode(auction.item_name) + " for the amount of " + unicode(bid_form.cleaned_data['amount']) + ".<p>Your bid page can be found <a href='" + unicode(LAZY_TLD) +"/silent_auction/bid/"  + unicode(bid_id) + "'>here</a>.<p>Thanks for bidding and good luck!"
+            mail = mailbot.pack_MIME(message, bid_form.cleaned_data['email'], 'Your bid for ' + unicode(auction.item_name))
+            print mail 
+            mailbot.send_mail(mail, bid_form.cleaned_data['email']) 
+            
+            
             return redirect('/silent_auction/bid/' + unicode(bid_id))
         else:
             return HttpResponse('your bid is structurally <i>wrong</i>, somehow') 
@@ -73,7 +88,7 @@ def bid_form(request):
 # link sent to bidder in email, otherwise unlisted for public
 def bid_page(request, bid_id):
     context = {
-        'bid' : Bid.objects.get(uuid = bid_id),
+        'bid' : get_object_or_404(Bid.objects.filter(uuid = bid_id)),
         'bid_id' : bid_id,
     }
     return render(request, 'silent_auction/bid_page.html', context)

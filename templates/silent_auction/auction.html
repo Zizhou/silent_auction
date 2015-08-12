@@ -3,6 +3,7 @@
 
 {% load staticfiles %}
 <link rel='stylesheet' type='text/css' href="{% static 'silent_auction/style.css' %}"/>
+{% if auction.active %}
 <script type='text/javascript' src='{% static 'silent_auction/price.js' %}'>
 </script>
 <script>
@@ -11,7 +12,7 @@ $(document).ready(function(){
     repeatMe('{{auction.uuid}}');
 });
 </script>
-
+{% endif %}
 {% endblock %}
 {% block pagetitle %}
 Auction Page
@@ -36,14 +37,14 @@ Description: {{auction.item_description}}<br>
 {% else %}
 <div class = 'box'>AUCTION DONE<br>
 Item: <strong>{{auction.item_name}}</strong><br>
-Winning bid: <span id = 'price'>{{auction.top_bid}}</span>
+Winning bid: {{auction.top_bid}}, by {{winner}}
 </div>
 {% endif %}
-{% if bids %}
+{% if request.user.is_staff %}
 <div class = 'clear' />
     {% for x in bids %}
     <div class = 'box'>
-        {{x}}
+        <a href='{% url 'silent_auction:bid' x.uuid %}'>{{x}}</a>
     </div><div class = 'clear'/>
     {% endfor %}
 {% endif %}
