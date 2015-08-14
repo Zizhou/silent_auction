@@ -16,7 +16,9 @@ class Bid(models.Model):
     email = models.EmailField()
     name = models.CharField(max_length = 200, unique = False, blank = True, null = True)
     bid_time = models.DateTimeField(default = timezone.now, editable = False) 
+    troll = models.BooleanField(default = False, blank = True)
     
+
     def __unicode__(self):
         return unicode(self.bid_time) + unicode(self.auction.item_name) + ' ' + unicode(self.name) + ' ' + unicode(self.amount)
 
@@ -59,6 +61,17 @@ class BidForm(forms.Form):
 ##magic signals
 #magically delicious
 
+class TrollForm(forms.Form):
+    troll = forms.BooleanField(required = False, label = 'Troll Bid?')
+    
+    def toggle_troll(self, uuid):
+        bid = Bid.objects.get(uuid = uuid)
+        bid.troll = self.cleaned_data['troll']
+        bid.save()
+        print bid
+        print bid.troll
+        
+
 #creates uuid for auctions upon successful creation
 def auction_create(sender, instance, created, **kwargs):
     if created == True:
@@ -74,7 +87,11 @@ def bid_create(sender, instance, created, **kwargs):
             instance.auction.top_bid = instance.amount
             instance.auction.save()
         #TODO: email bidder
-
+    #update auction top bid every non-creation save
+    else:
+        top = instance.auction.bid_set.filter(troll = False).order_by('-amount')[0]
+        instance.auction.top_bid = top.amount
+        instance.auction.save()
 post_save.connect(bid_create, sender = Bid)
 
 #helper to create uuid if field empty

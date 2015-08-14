@@ -46,6 +46,12 @@ Winning bid: {{auction.top_bid}}, by {{winner}}
         <a href='{% url 'silent_auction:bid' x.uuid %}'>{{x}}</a>
     </div><div class = 'clear'/>
     {% endfor %}
+    <div>Troll Bids:</div>
+    {% for x in trolls %}
+    <div class = 'box'>
+        <a href='{% url 'silent_auction:bid' x.uuid %}'>{{x}}</a>
+    </div><div class = 'clear'/>
+    {% endfor %}
 {% endif %}
 <div class = 'button'>
     <a class = 'fill' href = '{% url 'silent_auction:main' %}'>Listings</a>

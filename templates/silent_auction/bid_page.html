@@ -18,10 +18,18 @@ bid: {{bid.amount}}<br>
 email sent to: {{bid.email}}<br>
 bid made: {{bid.bid_time}}
 </div>
+<div class = 'clear'/>
 
+{% if request.user.is_staff %}
+<form method = 'POST' action = '{% url 'silent_auction:bid' bid.uuid %}' id = 'troll_box'>
+    {% csrf_token %}
+    {{form}}
+    <input type = 'submit' value = 'is_troll'>
+</form>
 <div class = 'clear'/>
 <div class = 'button'>
     <a class = 'fill' href='{% url 'silent_auction:auction' bid.auction.uuid %}'>Auction</a>
 </div>
 <div class = 'clear'/>
+{% endif %}
 {% endblock %}

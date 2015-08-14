@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponse, get_object_or_404, redirect
 from django.utils import timezone
-from silent_auction.models import Bid, Auction, BidForm
+from silent_auction.models import Bid, Auction, BidForm, TrollForm
 
 import datetime, mailbot
 
@@ -23,7 +23,8 @@ def main_page(request):
 # item name, description, current price(auto update?),link to bid
 def auction(request, auction_id):
     auction = get_object_or_404(Auction.objects.filter(uuid = auction_id))
-    all_bids = auction.bid_set.all().order_by('-amount')
+    all_bids = auction.bid_set.all().filter(troll = False).order_by('-amount')
+    troll_bids = auction.bid_set.all().filter(troll = True).order_by('-amount')
     if len(all_bids) > 0:
         winner = all_bids[0].name
     else:
@@ -31,6 +32,7 @@ def auction(request, auction_id):
     context = {
         'auction' : auction,
         'bids' : all_bids,
+        'trolls': troll_bids,
         'winner': winner,
     }
     return render(request, 'silent_auction/auction.html', context)
@@ -90,8 +92,16 @@ def bid_form(request):
 # shows any given bid
 # link sent to bidder in email, otherwise unlisted for public
 def bid_page(request, bid_id):
+    if request.method == 'POST':
+        form = TrollForm(request.POST)
+        if form.is_valid():
+            form.toggle_troll(bid_id)
+
+    form = TrollForm
+    this_bid = get_object_or_404(Bid.objects.filter(uuid = bid_id))
     context = {
-        'bid' : get_object_or_404(Bid.objects.filter(uuid = bid_id)),
+        'form' : TrollForm(initial = {'troll':this_bid.troll}),
+        'bid' : this_bid,
         'bid_id' : bid_id,
     }
     return render(request, 'silent_auction/bid_page.html', context)
